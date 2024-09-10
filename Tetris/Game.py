@@ -1,9 +1,19 @@
+from enum import Enum
 import math
 import random
 
 from .Tile import Tile
 from .Mino import Mino, Minos
 from .Board import Board
+
+
+class Actions(Enum):
+    Right = 0
+    Left = 1
+    HardDrop = 2
+    SoftDrop = 3
+    CW = 4
+    CCW = 5
 
 
 class Game:
@@ -16,6 +26,9 @@ class Game:
         self.linesCleared: int = 0
         self.ticks: int = 0
         self.lastSoftDrop: int = 0
+        self.actionsStart: list[int] = [0] * len(Actions)
+        self.actionPressed: list[bool] = [False] * len(Actions)
+        self.isRunning: bool = True
 
     @property
     def level(self) -> int:
@@ -72,48 +85,63 @@ class Game:
         return mino
 
     def rotateCW(self) -> None:
-        self.piece.rotateCW(self.board)
+        self.actionPressed[Actions.CW.value] = True
 
     def rotateCCW(self) -> None:
-        self.piece.rotateCCW(self.board)
+        self.actionPressed[Actions.CCW.value] = True
 
     def shiftLeft(self) -> None:
-        offRow, offCol = self.piece.offset
-        self.piece.offset = (offRow, offCol - 1)
-        if self.piece.distToGround(self.board) == -1:
-            self.piece.offset = (offRow, offCol)
+        self.actionPressed[Actions.Left.value] = True
 
     def shiftRight(self) -> None:
-        offRow, offCol = self.piece.offset
-        self.piece.offset = (offRow, offCol + 1)
-        if self.piece.distToGround(self.board) == -1:
-            self.piece.offset = (offRow, offCol)
+        self.actionPressed[Actions.Right.value] = True
 
     def softDrop(self) -> None:
-        if self.ticks - self.lastSoftDrop < 2:
-            return
-        self.lastSoftDrop = self.ticks
-        offRow, offCol = self.piece.offset
-        self.piece.offset = (offRow + 1, offCol)
-        if self.piece.distToGround(self.board) == -1:
-            self.piece.offset = (offRow, offCol)
+        self.actionPressed[Actions.SoftDrop.value] = True
 
     def hardDrop(self) -> None:
-        offRow, offCol = self.piece.offset
-        self.piece.offset = (offRow + self.piece.distToGround(self.board), offCol)
-        self._lockPiece()
+        self.actionPressed[Actions.HardDrop.value] = True
 
     def gameTick(self) -> bool:
+        if not self.isRunning:
+            return False
+        self.linesCleared += self.board.clearLines()
+        if self.actionPressed[Actions.HardDrop.value]:
+            offRow, offCol = self.piece.offset
+            self.piece.offset = (offRow + self.piece.distToGround(self.board), offCol)
+            self._lockPiece()
+        elif self.actionPressed[Actions.SoftDrop.value]:
+            if self.ticks - self.lastSoftDrop >= 2:
+                self.lastSoftDrop = self.ticks
+                offRow, offCol = self.piece.offset
+                self.piece.offset = (offRow + 1, offCol)
+                if self.piece.distToGround(self.board) == -1:
+                    self.piece.offset = (offRow, offCol)
+        elif self.actionPressed[Actions.Right.value]:
+            offRow, offCol = self.piece.offset
+            self.piece.offset = (offRow, offCol + 1)
+            if self.piece.distToGround(self.board) == -1:
+                self.piece.offset = (offRow, offCol)
+        elif self.actionPressed[Actions.Left.value]:
+            offRow, offCol = self.piece.offset
+            self.piece.offset = (offRow, offCol - 1)
+            if self.piece.distToGround(self.board) == -1:
+                self.piece.offset = (offRow, offCol)
+        elif self.actionPressed[Actions.CW.value]:
+            self.piece.rotateCW(self.board)
+        elif self.actionPressed[Actions.CCW.value]:
+            self.piece.rotateCCW(self.board)
+
+        for i in range(len(self.actionPressed)):
+            self.actionPressed[i] = False
+
         if self.ticks % self.gravity == 0:
             if self.piece.distToGround(self.board) == 0:
                 self._lockPiece()
-                if self.piece.distToGround(self.board) == -1:
-                    return False
             else:
                 offRow, offCol = self.piece.offset
                 self.piece.offset = (offRow + 1, offCol)
                 self.lastSoftDrop = self.ticks
-        self.linesCleared += self.board.clearLines()
         self.ticks += 1
         return True
 
@@ -126,3 +154,5 @@ class Game:
                     self.board.setTile(row + offRow, col + offCol, tile)
 
         self.piece = self._pickPiece()
+        if self.piece.distToGround(self.board) == -1:
+            self.isRunning = False
