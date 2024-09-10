@@ -22,14 +22,8 @@ class ConsoleRenderer(RendererBase):
             print("┃")
         print(f"┗{'━'*game.board.width*2}┛")
 
-    def renderMino(self, mino: Mino) -> None:
-        for row in range(4):
-            for col in range(4):
-                color = self.getColor(mino.getTile(row, col))
-                print(f"{color}  {BgColor.DEFAULT}", end="")
-            print()
-
     def getColor(self, tile: Tile) -> str:
+        """Map a Tile color to the ANSI escape code."""
         color = BgColor.DEFAULT
         match tile:
             case Tile.LBlue:

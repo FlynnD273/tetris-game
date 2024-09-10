@@ -8,6 +8,7 @@ from .Board import Board
 
 
 class Actions(Enum):
+    """The actions that the player can perform."""
     Right = 0
     Left = 1
     HardDrop = 2
@@ -32,10 +33,12 @@ class Game:
 
     @property
     def level(self) -> int:
+        """The level of the game. Affects piece drop speed and scoring."""
         return math.floor(self.linesCleared / 10)
 
     @property
     def gravity(self) -> int:
+        """The number of game ticks it takes for a piece to drop one row."""
         gravities: list[int] = [
             48,
             43,
@@ -73,6 +76,7 @@ class Game:
         return gravities[self.level]
 
     def _pickPiece(self) -> Mino:
+        """Return a random Mino, using random bag strategy."""
         if not self.bag:
             self.bag = Minos.copy()
 
@@ -85,24 +89,31 @@ class Game:
         return mino
 
     def rotateCW(self) -> None:
+        """Queue a clockwise rotation."""
         self.actionPressed[Actions.CW.value] = True
 
     def rotateCCW(self) -> None:
+        """Queue a counterclockwise rotation."""
         self.actionPressed[Actions.CCW.value] = True
 
     def shiftLeft(self) -> None:
+        """Queue a left move."""
         self.actionPressed[Actions.Left.value] = True
 
     def shiftRight(self) -> None:
+        """Queue a right move."""
         self.actionPressed[Actions.Right.value] = True
 
     def softDrop(self) -> None:
+        """Queue a soft drop."""
         self.actionPressed[Actions.SoftDrop.value] = True
 
     def hardDrop(self) -> None:
+        """Queue a hard drop."""
         self.actionPressed[Actions.HardDrop.value] = True
 
     def gameTick(self) -> bool:
+        """Run a single game tick."""
         if not self.isRunning:
             return False
         self.linesCleared += self.board.clearLines()
@@ -146,6 +157,7 @@ class Game:
         return True
 
     def _lockPiece(self) -> None:
+        """Lock the current piece to the game board and pick a new piece."""
         for row in range(self.piece.height):
             for col in range(self.piece.width):
                 tile = self.piece.getTile(row, col)

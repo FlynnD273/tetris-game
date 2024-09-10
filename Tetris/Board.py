@@ -19,6 +19,7 @@ class Board:
         return 20
 
     def clearLines(self) -> int:
+        """Clear all full lines and return the number of lines cleared."""
         rowsToClear: list[int] = []
         for row in range(self.height - 1, -1, -1):
             isClear = True
@@ -67,11 +68,13 @@ class Board:
                 self.tiles[i] = Tile.Clear
 
     def copy(self) -> "Board":
+        """Create a copy of the Board instance."""
         b = Board()
         b.tiles = self.tiles.copy()
         return b
 
     def __eq__(self, value: object, /) -> bool:
+        """Element-wise equality check."""
         if not isinstance(value, Board):
             return False
 

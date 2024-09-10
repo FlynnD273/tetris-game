@@ -41,21 +41,3 @@ while isRunning:
     renderer.render(game)
 
 pygame.quit()
-
-
-def demoMino(mino: Mino) -> None:
-    print("-" * 5)
-    renderer.renderMino(mino)
-    mino.rotateCW(game.board)
-    print("-" * 5)
-    renderer.renderMino(mino)
-    mino.rotateCW(game.board)
-    print("-" * 5)
-    renderer.renderMino(mino)
-    mino.rotateCW(game.board)
-    print("-" * 5)
-    renderer.renderMino(mino)
-
-
-# for m in Minos:
-#     demoMino(m)

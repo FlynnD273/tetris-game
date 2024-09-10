@@ -3,6 +3,7 @@ from .Board import Board
 
 
 class Mino:
+    """The base Mino class. Should not be instantiated directly."""
     def __init__(self) -> None:
         self.offset: tuple[int, int] = (0, 0)
         self.startOffset: tuple[int, int] = (0, 0)
@@ -22,17 +23,21 @@ class Mino:
 
     @property
     def width(self) -> int:
+        """The width of the Mino grid."""
         return 4
 
     @property
     def height(self) -> int:
+        """The height of the Mino grid."""
         return 4
 
     @property
     def currTiles(self) -> list[int]:
+        """The Tile list of the current rotation."""
         return self.rotations[self.rotation]
 
     def rotateCW(self, board: Board) -> None:
+        """Rotate clockwise and perform wallkick."""
         prevRotation = self.rotation
         prevOffset = self.offset
         self.rotation += 1
@@ -40,6 +45,7 @@ class Mino:
         self.tryRotation(board, prevRotation, prevOffset)
 
     def rotateCCW(self, board: Board) -> None:
+        """Rotate counterclockwise and perform wallkick."""
         prevRotation = self.rotation
         prevOffset = self.offset
         self.rotation += 3  # Needed because modulo doesn't like negative numbers
@@ -49,6 +55,7 @@ class Mino:
     def tryRotation(
         self, board: Board, prevRotation: int, prevOffset: tuple[int, int]
     ) -> None:
+        """Perform wallkick and reset if no valid end position."""
         isValid = False
         for kick in self.wallkicks[(prevRotation, self.rotation)]:
             kickRow, kickCol = kick
@@ -109,6 +116,7 @@ class Mino:
         )
 
     def copy(self) -> "Mino":
+        """Return a copy of the Mino instance."""
         m = Mino()
         m.rotations = self.rotations.copy()
         m.offset = self.offset
@@ -119,6 +127,8 @@ class Mino:
 
 
 class TMino(Mino):
+    """The T Mino piece."""
+
     def __init__(self) -> None:
         super().__init__()
         # fmt: off
@@ -147,6 +157,8 @@ class TMino(Mino):
 
 
 class JMino(Mino):
+    """The J Mino piece."""
+
     def __init__(self) -> None:
         super().__init__()
         # fmt: off
@@ -175,6 +187,8 @@ class JMino(Mino):
 
 
 class LMino(Mino):
+    """The L Mino piece."""
+
     def __init__(self) -> None:
         super().__init__()
         # fmt: off
@@ -203,6 +217,8 @@ class LMino(Mino):
 
 
 class OMino(Mino):
+    """The O Mino piece."""
+
     def __init__(self) -> None:
         super().__init__()
         # fmt: off
@@ -231,6 +247,8 @@ class OMino(Mino):
 
 
 class SMino(Mino):
+    """The S Mino piece."""
+
     def __init__(self) -> None:
         super().__init__()
         # fmt: off
@@ -259,6 +277,8 @@ class SMino(Mino):
 
 
 class ZMino(Mino):
+    """The Z Mino piece."""
+
     def __init__(self) -> None:
         super().__init__()
         # fmt: off
@@ -287,6 +307,8 @@ class ZMino(Mino):
 
 
 class IMino(Mino):
+    """The I Mino piece."""
+
     def __init__(self) -> None:
         super().__init__()
         # fmt: off
