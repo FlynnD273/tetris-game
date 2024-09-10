@@ -32,7 +32,7 @@ class Board:
         offset = 0
         row = self.height - 1
         while row - offset >= 0:
-            if offset < len(rowsToClear) and rowsToClear[offset] == row:
+            while offset < len(rowsToClear) and rowsToClear[offset] == row - offset:
                 offset += 1
             if offset > 0:
                 for col in range(self.width):
@@ -47,9 +47,15 @@ class Board:
         return len(rowsToClear)
 
     def getTile(self, row: int, col: int) -> Tile:
+        """Get the tile at the specified row and column."""
+        if row < 0 or row >= self.height or col < 0 or col >= self.width:
+            return Tile.LBlue
         return self.tiles[row * self.width + col]
 
     def setTile(self, row: int, col: int, tile: Tile) -> None:
+        """Set the tile at the specified row and column."""
+        if row < 0 or row >= self.height or col < 0 or col >= self.width:
+            return
         self.tiles[row * self.width + col] = tile
 
     def fillRandom(self, density: float = 0.5) -> None:
@@ -59,3 +65,17 @@ class Board:
                 self.tiles[i] = Tiles[random.randint(0, len(Tiles) - 1)]
             else:
                 self.tiles[i] = Tile.Clear
+
+    def copy(self) -> "Board":
+        b = Board()
+        b.tiles = self.tiles.copy()
+        return b
+
+    def __eq__(self, value: object, /) -> bool:
+        if not isinstance(value, Board):
+            return False
+
+        for a, b in zip(self.tiles, value.tiles):
+            if a != b:
+                return False
+        return True
