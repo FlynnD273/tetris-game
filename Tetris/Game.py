@@ -9,6 +9,7 @@ from .Board import Board
 
 class Actions(Enum):
     """The actions that the player can perform."""
+
     Right = 0
     Left = 1
     HardDrop = 2

@@ -4,6 +4,7 @@ from .Board import Board
 
 class Mino:
     """The base Mino class. Should not be instantiated directly."""
+
     def __init__(self) -> None:
         self.offset: tuple[int, int] = (0, 0)
         self.startOffset: tuple[int, int] = (0, 0)
