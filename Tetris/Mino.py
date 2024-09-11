@@ -10,12 +10,12 @@ class Mino:
         self.startOffset: tuple[int, int] = (0, 0)
         self.color: Tile = Tile.Clear
         self.rotations: list[list[int]] = [[0] * (4 * 4)] * 4
-        self.rotation: int = 0
+        self.rotation: int = 2
         self.wallkicks: dict[tuple[int, int], list[tuple[int, int]]] = {
-            (0, 1): [(0, 0), (0, -1), (1, -1), (-2, 0), (-2, -1)],
-            (1, 2): [(0, 0), (0, 1), (-1, 1), (2, 0), (2, 1)],
-            (2, 3): [(0, 0), (0, 1), (1, 1), (-2, 0), (-2, 1)],
-            (3, 0): [(0, 0), (0, -1), (-1, -1), (2, 0), (2, -1)],
+            (0, 1): [(0, 0), (0, -1), (-1, -1), (2, 0), (2, -1)],
+            (1, 2): [(0, 0), (0, 1), (1, 1), (-2, 0), (-2, 1)],
+            (2, 3): [(0, 0), (0, 1), (-1, 1), (2, 0), (2, 1)],
+            (3, 0): [(0, 0), (0, -1), (1, -1), (-2, 0), (-2, -1)],
         }
         items = list(self.wallkicks.items())
         for key, value in items:
@@ -62,7 +62,7 @@ class Mino:
             kickRow, kickCol = kick
             offRow, offCol = prevOffset
             self.offset = (kickRow + offRow, kickCol + offCol)
-            if self.distToGround(board) >= 0:
+            if self.distToGround(board) != -1:
                 isValid = True
                 break
         if not isValid:
@@ -120,6 +120,7 @@ class Mino:
         """Return a copy of the Mino instance."""
         m = Mino()
         m.rotations = self.rotations.copy()
+        m.wallkicks = self.wallkicks.copy()
         m.offset = self.offset
         m.startOffset = self.startOffset
         m.rotation = self.rotation
@@ -134,20 +135,20 @@ class TMino(Mino):
         super().__init__()
         # fmt: off
         self.rotations: list[list[int]] = [
-                [0, 0, 0, 0,
-                 1, 1, 1, 0,
-                 0, 1, 0, 0,
-                 0, 0, 0, 0,],
-                [0, 1, 0, 0,
-                 1, 1, 0, 0, 
-                 0, 1, 0, 0,
-                 0, 0, 0, 0,],
                 [0, 1, 0, 0,
                  1, 1, 1, 0, 
                  0, 0, 0, 0,
                  0, 0, 0, 0,],
                 [0, 1, 0, 0,
                  0, 1, 1, 0, 
+                 0, 1, 0, 0,
+                 0, 0, 0, 0,],
+                [0, 0, 0, 0,
+                 1, 1, 1, 0,
+                 0, 1, 0, 0,
+                 0, 0, 0, 0,],
+                [0, 1, 0, 0,
+                 1, 1, 0, 0, 
                  0, 1, 0, 0,
                  0, 0, 0, 0,],
                 ]
@@ -164,14 +165,6 @@ class JMino(Mino):
         super().__init__()
         # fmt: off
         self.rotations: list[list[int]] = [
-                [0, 0, 0, 0,
-                 1, 1, 1, 0,
-                 0, 0, 1, 0,
-                 0, 0, 0, 0,],
-                [0, 1, 0, 0,
-                 0, 1, 0, 0, 
-                 1, 1, 0, 0,
-                 0, 0, 0, 0,],
                 [1, 0, 0, 0,
                  1, 1, 1, 0, 
                  0, 0, 0, 0,
@@ -180,9 +173,17 @@ class JMino(Mino):
                  0, 1, 0, 0, 
                  0, 1, 0, 0,
                  0, 0, 0, 0,],
+                [0, 0, 0, 0,
+                 1, 1, 1, 0,
+                 0, 0, 1, 0,
+                 0, 0, 0, 0,],
+                [0, 1, 0, 0,
+                 0, 1, 0, 0, 
+                 1, 1, 0, 0,
+                 0, 0, 0, 0,],
                 ]
         # fmt: on
-        self.color = Tile.Orange
+        self.color = Tile.DBlue
         self.offset = (-1, 3)
         self.startOffset = self.offset
 
@@ -194,14 +195,6 @@ class LMino(Mino):
         super().__init__()
         # fmt: off
         self.rotations: list[list[int]] = [
-                [0, 0, 0, 0,
-                 1, 1, 1, 0,
-                 1, 0, 0, 0,
-                 0, 0, 0, 0,],
-                [1, 1, 0, 0,
-                 0, 1, 0, 0, 
-                 0, 1, 0, 0,
-                 0, 0, 0, 0,],
                 [0, 0, 1, 0,
                  1, 1, 1, 0, 
                  0, 0, 0, 0,
@@ -210,9 +203,17 @@ class LMino(Mino):
                  0, 1, 0, 0, 
                  0, 1, 1, 0,
                  0, 0, 0, 0,],
+                [0, 0, 0, 0,
+                 1, 1, 1, 0,
+                 1, 0, 0, 0,
+                 0, 0, 0, 0,],
+                [1, 1, 0, 0,
+                 0, 1, 0, 0, 
+                 0, 1, 0, 0,
+                 0, 0, 0, 0,],
                 ]
         # fmt: on
-        self.color = Tile.DBlue
+        self.color = Tile.Orange
         self.offset = (-1, 3)
         self.startOffset = self.offset
 
@@ -254,14 +255,6 @@ class SMino(Mino):
         super().__init__()
         # fmt: off
         self.rotations: list[list[int]] = [
-                [0, 0, 0, 0,
-                 0, 1, 1, 0,
-                 1, 1, 0, 0,
-                 0, 0, 0, 0,],
-                [1, 0, 0, 0,
-                 1, 1, 0, 0,
-                 0, 1, 0, 0,
-                 0, 0, 0, 0,],
                 [0, 0, 1, 1,
                  0, 1, 1, 0,
                  0, 0, 0, 0,
@@ -269,6 +262,14 @@ class SMino(Mino):
                 [0, 1, 0, 0,
                  0, 1, 1, 0,
                  0, 0, 1, 0,
+                 0, 0, 0, 0,],
+                [0, 0, 0, 0,
+                 0, 1, 1, 0,
+                 1, 1, 0, 0,
+                 0, 0, 0, 0,],
+                [1, 0, 0, 0,
+                 1, 1, 0, 0,
+                 0, 1, 0, 0,
                  0, 0, 0, 0,],
                 ]
         # fmt: on
@@ -284,14 +285,6 @@ class ZMino(Mino):
         super().__init__()
         # fmt: off
         self.rotations: list[list[int]] = [
-                [0, 0, 0, 0,
-                 1, 1, 0, 0,
-                 0, 1, 1, 0,
-                 0, 0, 0, 0,],
-                [0, 1, 0, 0,
-                 1, 1, 0, 0,
-                 1, 0, 0, 0,
-                 0, 0, 0, 0,],
                 [1, 1, 0, 0,
                  0, 1, 1, 0,
                  0, 0, 0, 0,
@@ -299,6 +292,14 @@ class ZMino(Mino):
                 [0, 0, 1, 0, 
                  0, 1, 1, 0, 
                  0, 1, 0, 0, 
+                 0, 0, 0, 0,],
+                [0, 0, 0, 0,
+                 1, 1, 0, 0,
+                 0, 1, 1, 0,
+                 0, 0, 0, 0,],
+                [0, 1, 0, 0,
+                 1, 1, 0, 0,
+                 1, 0, 0, 0,
                  0, 0, 0, 0,],
                 ]
         # fmt: on
@@ -315,14 +316,6 @@ class IMino(Mino):
         # fmt: off
         self.rotations: list[list[int]] = [
                 [0, 0, 0, 0,
-                 0, 0, 0, 0,
-                 1, 1, 1, 1,
-                 0, 0, 0, 0,],
-                [0, 1, 0, 0,
-                 0, 1, 0, 0,
-                 0, 1, 0, 0,
-                 0, 1, 0, 0,],
-                [0, 0, 0, 0,
                  1, 1, 1, 1,
                  0, 0, 0, 0,
                  0, 0, 0, 0,],
@@ -330,11 +323,29 @@ class IMino(Mino):
                  0, 0, 1, 0,
                  0, 0, 1, 0,
                  0, 0, 1, 0,],
+                [0, 0, 0, 0,
+                 0, 0, 0, 0,
+                 1, 1, 1, 1,
+                 0, 0, 0, 0,],
+                [0, 1, 0, 0,
+                 0, 1, 0, 0,
+                 0, 1, 0, 0,
+                 0, 1, 0, 0,],
                 ]
         # fmt: on
         self.color = Tile.LBlue
         self.offset = (-2, 3)
         self.startOffset = self.offset
+        self.wallkicks = {
+            (0, 1): [(0, 0), (0, -2), (0, 1), (1, -2), (-2, 1)],
+            (1, 2): [(0, 0), (0, -1), (0, 2), (-2, -1), (1, 2)],
+            (2, 3): [(0, 0), (0, 2), (0, -1), (-1, 2), (2, -1)],
+            (3, 0): [(0, 0), (0, 1), (0, -2), (2, 1), (-1, -2)],
+        }
+        items = list(self.wallkicks.items())
+        for key, value in items:
+            a, b = key
+            self.wallkicks[(b, a)] = [(-x, -y) for x, y in [offset for offset in value]]
 
 
 Minos = [IMino(), JMino(), LMino(), OMino(), SMino(), TMino(), ZMino()]

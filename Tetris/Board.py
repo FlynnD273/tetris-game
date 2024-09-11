@@ -49,8 +49,10 @@ class Board:
 
     def getTile(self, row: int, col: int) -> Tile:
         """Get the tile at the specified row and column."""
-        if row < 0 or row >= self.height or col < 0 or col >= self.width:
+        if row >= self.height or col < 0 or col >= self.width:
             return Tile.LBlue
+        if row < 0:
+            return Tile.Clear
         return self.tiles[row * self.width + col]
 
     def setTile(self, row: int, col: int, tile: Tile) -> None:

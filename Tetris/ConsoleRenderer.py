@@ -10,17 +10,56 @@ class ConsoleRenderer(RendererBase):
 
     def render(self, game: Game) -> None:
         """Render the game to the console."""
-        print(f"┏{'━'*game.board.width*2}┓")
+        output = ""
+        output += f"{BgColor.DEFAULT}┏{'━'*game.board.width*2}┓\n"
+        ghost = game.piece.copy()
+        offRow, offCol = ghost.offset
+        ghost.offset = (offRow + game.piece.distToGround(game.board), offCol)
         for row in range(game.board.height):
-            print("┃", end="")
+            prevColor = BgColor.DEFAULT
+            output += "┃"
             for col in range(game.board.width):
                 tile = game.piece.getTileWithOffset(row, col)
                 if tile == Tile.Clear:
-                    tile = game.board.getTile(row, col)
+                    tile = ghost.getTileWithOffset(row, col)
+                    if tile == Tile.Clear:
+                        tile = game.board.getTile(row, col)
+                    else:
+                        prevColor = BgColor.DEFAULT
+                        output += BgColor.DEFAULT + "🮮🮮"
+                        continue
+                offRow, offCol = game.piece.offset
                 color = self.getColor(tile)
-                print(f"{color}  {BgColor.DEFAULT}", end="")
-            print("┃")
-        print(f"┗{'━'*game.board.width*2}┛")
+                if prevColor != color:
+                    output += f"{color}  "
+                else:
+                    output += "  "
+                prevColor = color
+            output += BgColor.DEFAULT + "┃\n"
+        output += f"┗{'━'*game.board.width*2}┛\n"
+        output += "┏" + "━" * 8 + "┳" + "━" * 11 + "┓\n"
+        for row in range(4):
+            output += "┃"
+            for col in range(4):
+                tile = game.nextPiece.getTile(row, col)
+                color = self.getColor(tile)
+                output += f"{color}  {BgColor.DEFAULT}"
+            output += "┃"
+            match row:
+                case 0:
+                    output += "SCORE" + " " * 6 + "┃\n"
+                case 1:
+                    output += f"{game.score:06}" + " " * 5 + "┃\n"
+                case 2:
+                    output += "LEVEL" + " " * 6 + "┃\n"
+                case 3:
+                    output += f"{game.level:02}" + " " * 9 + "┃\n"
+                case _:
+                    output += "\n"
+
+        output += "┗" + "━" * 8 + "┻" + "━" * 11 + "┛\n"
+
+        print(output)
 
     def getColor(self, tile: Tile) -> str:
         """Map a Tile color to the ANSI escape code."""
