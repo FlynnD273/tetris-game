@@ -1,7 +1,6 @@
 from .RendererBase import RendererBase
 from .Game import Game
 from .Tile import Tile
-from .Mino import Mino
 from colorist import BgColor, BgBrightColor
 
 
