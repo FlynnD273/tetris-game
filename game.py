@@ -9,7 +9,7 @@ from Tetris.Mino import JMino, LMino, Mino, Minos, TMino, OMino, SMino, ZMino
 
 
 pygame.init()
-(screen, renderer) = build_screen_and_render_from_width(500)
+(screen, renderer) = build_screen_and_render_from_width(800)
 clock = pygame.time.Clock()
 pygame.key.set_repeat(200, 100)
 
