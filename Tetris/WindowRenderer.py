@@ -6,16 +6,19 @@ import pygame
 
 class WindowRenderer (RendererBase) :
 
+    # Tile size: (width - 50)/15
+    # Total width: (15x + 50)
+    # Total Height: (20x + 30)
     def __init__(self, render_surface: pygame.Surface) :
         self.render_surface = render_surface
-        self.tile_size = int(((self.render_surface.get_width()) / 2) / 10)
+        self.tile_size = int((self.render_surface.get_width() - 50) / 15)
         self.background_color = "black"
         self.border_color = "white"
         self.preview_color = "grey"
         self.border_thickness = 5
         
     def render(self, game: Game) -> None:
-        game_starting_point_x = 10
+        game_starting_point_x = (self.render_surface.get_width() - (15 * self.tile_size + 20)) / 2
         game_starting_point_y = 10
 
         top_border = pygame.Rect(game_starting_point_x - self.border_thickness, game_starting_point_y - self.border_thickness, self.tile_size * game.board.width + 2 * self.border_thickness, self.border_thickness)
@@ -139,9 +142,9 @@ class WindowRenderer (RendererBase) :
 
         return color
 
-def build_screen_and_render_from_width(width: int) -> (pygame.Surface, WindowRenderer) :
+def build_screen_and_render_from_height(width: int) -> (pygame.Surface, WindowRenderer) :
     """Setup window and the renderer in one go."""
-    screen = pygame.display.set_mode((width, int(((width) / 2) / 10) * 20 + 20))
+    screen = pygame.display.set_mode((width, (20 * int((width - 50) / 15)) + 20))
     renderer = WindowRenderer(screen)
 
     return (screen, renderer)

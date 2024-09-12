@@ -3,13 +3,13 @@ import time
 import pygame
 
 # from Tetris.ConsoleRenderer import ConsoleRenderer
-from Tetris.WindowRenderer import WindowRenderer, build_screen_and_render_from_width
+from Tetris.WindowRenderer import WindowRenderer, build_screen_and_render_from_height
 from Tetris.Game import Game
 from Tetris.Mino import JMino, LMino, Mino, Minos, TMino, OMino, SMino, ZMino
 
 
 pygame.init()
-(screen, renderer) = build_screen_and_render_from_width(800)
+(screen, renderer) = build_screen_and_render_from_height(500)
 clock = pygame.time.Clock()
 pygame.key.set_repeat(200, 100)
 
