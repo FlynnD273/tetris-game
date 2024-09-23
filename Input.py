@@ -41,3 +41,21 @@ class OnPressRepeatingHook (InputHook) :
     def do_action(self, state) :
         if state :
             self.action()
+    
+class OnPressRepeatDelayedHook (InputHook) :
+    def __init__(self, key, action, cycles) :
+        super().__init__(key)
+        self.action = action
+        self.delay = cycles
+        self.check_count = 0
+    
+    def do_action(self, state) :
+        if state and (self.check_count == 0 or self.check_count > self.delay) :
+            self.action()
+            self.check_count = self.check_count + 1
+        elif state :
+            self.check_count = self.check_count + 1
+
+        if not state :
+            self.check_count = 0
+        

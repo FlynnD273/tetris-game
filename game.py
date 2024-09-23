@@ -7,7 +7,7 @@ from Tetris.WindowRenderer import WindowRenderer, build_screen_and_render_from_h
 from Tetris.Game import Game
 from Tetris.Mino import JMino, LMino, Mino, Minos, TMino, OMino, SMino, ZMino
 
-from Input import InputHandler, OnPressRequireResetHook, OnPressRepeatingHook
+from Input import InputHandler, OnPressRequireResetHook, OnPressRepeatingHook, OnPressRepeatDelayedHook
 
 
 
@@ -20,10 +20,10 @@ input_handler = InputHandler()
 
 game = Game()
 
-input_handler.add_hook(OnPressRepeatingHook(pygame.K_RIGHT, game.shiftRight))
-input_handler.add_hook(OnPressRepeatingHook(pygame.K_LEFT, game.shiftLeft))
+input_handler.add_hook(OnPressRepeatDelayedHook(pygame.K_RIGHT, game.shiftRight, 30)) # 30 cycles before repeat kicks in
+input_handler.add_hook(OnPressRepeatDelayedHook(pygame.K_LEFT, game.shiftLeft, 30)) # 30 cycles before repeat kicks in
 input_handler.add_hook(OnPressRequireResetHook(pygame.K_UP, game.hardDrop))
-input_handler.add_hook(OnPressRequireResetHook(pygame.K_DOWN, game.softDrop))
+input_handler.add_hook(OnPressRepeatingHook(pygame.K_DOWN, game.softDrop))
 input_handler.add_hook(OnPressRequireResetHook(pygame.K_z, game.rotateCCW))
 input_handler.add_hook(OnPressRequireResetHook(pygame.K_x, game.rotateCW))
 
