@@ -36,9 +36,10 @@ while isRunning:
 
     for event in pygame.event.get():
         # Handles exit
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            raise SystemExit
+        match event.type:
+            case pygame.QUIT:
+                pygame.quit()
+                raise SystemExit
 
     input_handler.update(pygame.key.get_pressed())
 

@@ -254,7 +254,9 @@ def build_screen_and_render_from_height(
     width: int,
 ) -> tuple[pygame.Surface, WindowRenderer]:
     """Setup window and the renderer in one go."""
-    screen = pygame.display.set_mode((width, (20 * int((width - 50) / 15)) + 20))
+    screen = pygame.display.set_mode(
+        (width, (20 * int((width - 50) / 15)) + 20), pygame.SCALED|pygame.RESIZABLE
+    )
     renderer = WindowRenderer(screen)
 
     return (screen, renderer)
