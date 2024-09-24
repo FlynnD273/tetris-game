@@ -13,9 +13,9 @@ class WindowRenderer(RendererBase):
     def __init__(self, render_surface: pygame.Surface):
         self.render_surface = render_surface
         self.tile_size = int((self.render_surface.get_width() - 50) / 15)
-        self.background_color = "black"
-        self.border_color = "white"
-        self.preview_color = "grey"
+        self.background_color = (0, 0, 0)
+        self.border_color = (255, 255, 255)
+        self.preview_color = (127, 127, 127)
         self.border_thickness = 5
 
     def render(self, game: Game) -> None:
@@ -220,26 +220,34 @@ class WindowRenderer(RendererBase):
         # Update the surface
         pygame.display.flip()
 
-    def getColor(self, tile: Tile) -> str:
+    def cvt_color(self, color: str | tuple[int, int, int]) -> tuple[int, int, int]:
+        if isinstance(color, str):
+            r = int(color[1:3], 16)
+            g = int(color[3:5], 16)
+            b = int(color[5:7], 16)
+            return (r, g, b)
+        return color
+
+    def getColor(self, tile: Tile) -> tuple[int, int, int]:
         """Map a Tile color to the pygame-safe color."""
         color = self.background_color
         match tile:
             case Tile.LBlue:
-                color = "cyan"
+                color = "#78e2ed"
             case Tile.DBlue:
-                color = "blue"
+                color = "#537cd5"
             case Tile.Orange:
-                color = "orange"
+                color = "#ff8d00"
             case Tile.Yellow:
-                color = "yellow"
+                color = "#e6a928"
             case Tile.Green:
-                color = "green"
+                color = "#00d537"
             case Tile.Red:
-                color = "red"
+                color = "#ff3e49"
             case Tile.Magenta:
-                color = "magenta"
+                color = "#ce57cb"
 
-        return color
+        return self.cvt_color(color)
 
 
 def build_screen_and_render_from_height(
