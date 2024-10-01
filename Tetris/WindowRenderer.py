@@ -10,20 +10,24 @@ class WindowRenderer(RendererBase):
     # Tile size: (width - 50)/15
     # Total width: (15x + 50)
     # Total Height: (20x + 30)
-    def __init__(self, render_surface: pygame.Surface):
+    def __init__(self, render_surface: pygame.Surface, game_count):
         self.render_surface = render_surface
-        self.tile_size = int((self.render_surface.get_width() - 50) / 15)
+        self.tile_size = int((self.render_surface.get_width() - (50 * game_count)) / (15 * game_count))
         self.background_color = (0, 0, 0)
         self.border_color = (255, 255, 255)
         self.preview_color = (127, 127, 127)
         self.border_thickness = 5
 
-    def render(self, game: Game) -> None:
+    def clear_screen(self) -> None :
+        # Clear the background
+        self.render_surface.fill(self.getColor(Tile.Clear))
+        
+    def render_all(self, games: list[Game]) -> None:
+        game_width = (20 * self.tile_size)
+        for (i, game) in enumerate(games) :
+            self.render(game, 10 + (i * game_width), 10)
+    def render(self, game: Game, game_starting_point_x, game_starting_point_y) -> None:
         """Render the game."""
-        game_starting_point_x = (
-            self.render_surface.get_width() - (15 * self.tile_size + 20)
-        ) / 2
-        game_starting_point_y = 10
 
         top_border = pygame.Rect(
             game_starting_point_x - self.border_thickness,
@@ -51,19 +55,12 @@ class WindowRenderer(RendererBase):
         )
 
         scoring_width = (
-            self.tile_size * int(game.board.width / 2) + 2 * self.border_thickness
+            self.tile_size * 8 * self.border_thickness
         )
+
         scoring_starting_point_y = game_starting_point_y
-        center = int(
-            (
-                game_starting_point_x
-                + self.tile_size * game.board.width
-                + 10
-                + self.render_surface.get_width()
-            )
-            / 2
-        )
-        scoring_starting_point_x = center - int(scoring_width / 2)
+        
+        scoring_starting_point_x = game_starting_point_x + self.tile_size * 10 + 20
 
         scoring_board_dimensions = 4
 
@@ -111,9 +108,6 @@ class WindowRenderer(RendererBase):
             (preview_rgt_border.x, preview_bot_border.y + 10),
             (preview_rgt_border.width, preview_rgt_border.height),
         )
-
-        # Clear the background
-        self.render_surface.fill(self.getColor(Tile.Clear))
 
         tile = game.nextPiece
         for row in range(4):
@@ -217,9 +211,6 @@ class WindowRenderer(RendererBase):
                     ),
                 )
 
-        # Update the surface
-        pygame.display.flip()
-
     def cvt_color(self, color: str | tuple[int, int, int]) -> tuple[int, int, int]:
         if isinstance(color, str):
             r = int(color[1:3], 16)
@@ -251,12 +242,12 @@ class WindowRenderer(RendererBase):
 
 
 def build_screen_and_render_from_height(
-    width: int,
+    width: int, count: int
 ) -> tuple[pygame.Surface, WindowRenderer]:
     """Setup window and the renderer in one go."""
     screen = pygame.display.set_mode(
         (width, (20 * int((width - 50) / 15)) + 20), pygame.SCALED | pygame.RESIZABLE
     )
-    renderer = WindowRenderer(screen)
+    renderer = WindowRenderer(screen, count)
 
     return (screen, renderer)
