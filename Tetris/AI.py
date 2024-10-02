@@ -16,7 +16,7 @@ class AI:
         else:
             self.model: keras.Model = self.build_new_model()
 
-    def build_new_model() -> keras.Model:
+    def build_new_model(self) -> keras.Model:
         board_size = (10, 20)
 
         input_board = keras.layers.Input(board_size)
