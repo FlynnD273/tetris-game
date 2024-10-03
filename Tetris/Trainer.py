@@ -1,19 +1,26 @@
-from tensorflow import keras
-import pygad.kerasga
-import numpy
-import pygad
-
+from .WindowRenderer import build_screen_and_render_from_height
 from .Game import Game
 from .AI import AI
+
+import keras
+import pygad.kerasga
+import pygame
+import numpy
+import pygad
 
 
 ##from pygad
 class Trainer:
+    """The Trainer for the AI"""
 
     def __init__(self) -> None:
         self.ai = AI()
+        pygame.init()
+        (screen, self.renderer) = build_screen_and_render_from_height(500)
+        self.clock = pygame.time.Clock()
 
     def _run_tetris(self, _ga, solution, _sol_idx):
+        """run the tetris game"""
 
         model_weights_matrix = pygad.kerasga.model_weights_as_matrix(
             model=self.ai.model, weights_vector=solution
@@ -22,32 +29,34 @@ class Trainer:
         self.ai.model.set_weights(weights=model_weights_matrix)
 
         game = Game()
+        game.linesCleared = 300
         while game.isRunning:
-            action = self.ai.get_action()
+            pygame.event.get()
+            action = self.ai.get_action(game.board.tiles, game.piece)
+            # print(action)
             game.actionPressed[action] = True
             game.gameTick()
+            self.renderer.render(game)
+            # self.clock.tick(60)
 
         return game.ticks
 
-    def _callback(ga):
+    def _callback(self, ga):
+        """print generation data"""
         print(f"Generation = {ga.generations_completed}")
-        print(f"Fitness    = {ga.best_solution()[1]}")
+        print(f"Best Steps = {ga.best_solution()[1]}")
+        pass
 
-    """run the genetic algorithm"""
-
-    def train(self, file_name):
+    def train(
+        self, file_name, num_solutions=10, num_generations=25, num_parents_mating=5
+    ):
+        """run the genetic algorithm and save results to file_name"""
 
         # Create an instance of the pygad.kerasga.KerasGA class to build the initial population.
-        keras_ga = pygad.kerasga.KerasGA(model=self.ai.model, num_solutions=10)
-
-        # Prepare the PyGAD parameters. Check the documentation for more information: https://pygad.readthedocs.io/en/latest/pygad.html#pygad-ga-class
-        num_generations = 25  # Number of generations.
-        num_parents_mating = (
-            5  # Number of solutions to be selected as parents in the mating pool.
+        keras_ga = pygad.kerasga.KerasGA(
+            model=self.ai.model, num_solutions=num_solutions
         )
-        initial_population = (
-            keras_ga.population_weights
-        )  # Initial population of network weights.
+        initial_population = keras_ga.population_weights
 
         # Create an instance of the pygad.GA class
         ga_instance = pygad.GA(
@@ -60,9 +69,6 @@ class Trainer:
 
         # Start the genetic algorithm evolution.
         ga_instance.run()
-
-        # After the generations complete, some plots are showed that summarize how the outputs/fitness values evolve over generations.
-        ga_instance.plot_fitness(title="Iteration vs. Fitness", linewidth=4)
 
         # Returning the details of the best solution.
         solution, solution_fitness, solution_idx = ga_instance.best_solution()
@@ -82,4 +88,4 @@ class Trainer:
             model=self.ai.model, weights_vector=solution
         )
         self.ai.model.set_weights(best_solution_weights)
-        self.ai.model.save(file_name)
+        self.ai.model.save(f"{file_name}.keras")
