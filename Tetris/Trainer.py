@@ -1,4 +1,3 @@
-from .WindowRenderer import build_screen_and_render_from_height
 from .Game import Game
 from .AI import AI
 
@@ -15,9 +14,11 @@ class Trainer:
 
     def __init__(self) -> None:
         self.ai = AI()
-        pygame.init()
-        (screen, self.renderer) = build_screen_and_render_from_height(500)
-        self.clock = pygame.time.Clock()
+        # pygame.init()
+        # (screen, self.renderer) = build_screen_and_render_from_height(500)
+        # self.clock = pygame.time.Clock()
+        self.completed_gens = 0
+        self.gens = 0
 
     def _run_tetris(self, _ga, solution, _sol_idx):
         """run the tetris game"""
@@ -31,15 +32,15 @@ class Trainer:
         game = Game()
         game.linesCleared = 300
         while game.isRunning:
-            pygame.event.get()
+            # pygame.event.get()
             action = self.ai.get_action(game.board.tiles, game.piece)
             # print(action)
             game.actionPressed[action] = True
             game.gameTick()
-            self.renderer.render(game)
+            # self.renderer.render(game)
             # self.clock.tick(60)
 
-        return game.ticks
+        return (game.ticks + 100 * game.score)
 
     def _callback(self, ga):
         """print generation data"""
