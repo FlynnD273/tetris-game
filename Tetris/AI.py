@@ -43,7 +43,7 @@ class AI:
         output_layer = keras.layers.Dense(6, activation="softmax")(dense_layer2)
 
         model = keras.Model(inputs=input_board, outputs=output_layer, name="AI")
-        keras.utils.plot_model(model, to_file="test.png", show_shapes=True)
+        # keras.utils.plot_model(model, to_file="test.png", show_shapes=True)
         return model
 
     def get_action(self, board: list[Tile], mino: Mino) -> int:
