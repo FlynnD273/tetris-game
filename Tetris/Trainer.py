@@ -1,3 +1,4 @@
+from h5py._hl.base import filename_encode
 from .Tile import Tile
 from .Game import Game
 from .AI import AI
@@ -43,13 +44,21 @@ class Trainer:
     def _callback(self, ga):
         """print generation data"""
         print(f"Generation = {ga.generations_completed}/{self.generations}")
-        print(f"Best Steps = {ga.best_solution()[1]}")
+        solution = ga.best_solution()
+        print(f"Best Steps = {solution[1]}")
+
+        best_solution_weights = pygad.kerasga.model_weights_as_matrix(
+            model=self.ai.model, weights_vector=solution
+        )
+        self.ai.model.set_weights(best_solution_weights)
+        self.ai.model.save(f"{self.file_name}_{ga.generations_completed}.keras")
 
     def train(
         self, file_name, num_solutions=10, num_generations=25, num_parents_mating=5
     ):
         """run the genetic algorithm and save results to file_name"""
         self.generations = num_generations
+        self.file_name = file_name
 
         # Create an instance of the pygad.kerasga.KerasGA class to build the initial population.
         keras_ga = pygad.kerasga.KerasGA(
