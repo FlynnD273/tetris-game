@@ -14,8 +14,7 @@ game = Game()
 
 isRunning = True
 lastTime = time.time()
-ai = AI()
-ai.model.load_weights(sys.argv[1] if len(sys.argv) > 1 else "./models/test.keras")
+ai = AI(sys.argv[1] if len(sys.argv) > 1 else "./models/test.keras")
 game.linesCleared = 200
 while isRunning:
     clock.tick(60)

@@ -1,3 +1,4 @@
+from tensorflow.python.ops.gen_math_ops import cumulative_logsumexp
 from .Tile import Tile
 from .Game import Game
 from .AI import AI
@@ -25,20 +26,25 @@ class Trainer:
 
         game = Game()
         game.linesCleared = 300
+        cumulative_height = 0
         while game.isRunning and game.ticks < 2000:
             action = self.ai.get_action(game.board.tiles, game.piece)
             game.actionPressed[action] = True
             game.gameTick()
-
-        max_height = -1
-        for row in range(game.board.height):
-            for col in range(game.board.width):
-                if game.board.getTile(row, col) != Tile.Clear:
-                    max_height = row
+            max_height = -1
+            for row in range(game.board.height):
+                for col in range(game.board.width):
+                    if game.board.getTile(row, col) != Tile.Clear:
+                        max_height = row
+                        break
+                if max_height != -1:
                     break
-            if max_height != -1:
-                break
-        return game.ticks + 100 * game.score + 100 * max_height
+            if max_height == -1:
+                max_height = 0
+            cumulative_height = game.board.height - max_height
+
+
+        return game.ticks + 100 * game.score + cumulative_height / 10 + game.pieces_placed * 100
 
     def _callback(self, ga: pygad.pygad.GA):
         """print generation data"""
@@ -60,7 +66,8 @@ class Trainer:
         """run the genetic algorithm and save results to file_name"""
         self.generations = num_generations
         self.file_name = file_name
-        os.mkdir("models")
+        if not os.path.exists("models"):
+            os.mkdir("models")
 
         # Create an instance of the pygad.kerasga.KerasGA class to build the initial population.
         keras_ga = pygad.kerasga.KerasGA(

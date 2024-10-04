@@ -33,6 +33,8 @@ class Game:
         self.actionPressed: list[bool] = [False] * len(Actions)
         self.isRunning: bool = True
         self.score: int = 0
+        self.pieces_placed: int = 0
+        self.last_locked: int = 0
 
     @property
     def level(self) -> int:
@@ -132,6 +134,18 @@ class Game:
             case 4:
                 multiplier = 1200
         self.score += (self.level + 1) * multiplier
+
+        if self.ticks % self.gravity == 0:
+            if self.piece.distToGround(self.board) == 0:
+                self._lockPiece()
+            else:
+                offRow, offCol = self.piece.offset
+                self.piece.offset = (offRow + 1, offCol)
+                self.lastSoftDrop = self.ticks
+                if (self.ticks - self.last_locked) / self.gravity > 30:
+                    self.actionPressed[Actions.HardDrop.value] = True
+        self.ticks += 1
+
         if self.actionPressed[Actions.HardDrop.value]:
             offRow, offCol = self.piece.offset
             self.piece.offset = (offRow + self.piece.distToGround(self.board), offCol)
@@ -161,18 +175,12 @@ class Game:
         for i in range(len(self.actionPressed)):
             self.actionPressed[i] = False
 
-        if self.ticks % self.gravity == 0:
-            if self.piece.distToGround(self.board) == 0:
-                self._lockPiece()
-            else:
-                offRow, offCol = self.piece.offset
-                self.piece.offset = (offRow + 1, offCol)
-                self.lastSoftDrop = self.ticks
-        self.ticks += 1
         return True
 
     def _lockPiece(self) -> None:
         """Lock the current piece to the game board and pick a new piece."""
+        self.pieces_placed += 1
+        self.last_locked = self.ticks
         for row in range(self.piece.height):
             for col in range(self.piece.width):
                 tile = self.piece.getTile(row, col)

@@ -40,7 +40,10 @@ class AI:
         dense_layer2 = keras.layers.Dense(
             10, activation="relu", use_bias=True, name="dense2"
         )(dense_layer1)
-        output_layer = keras.layers.Dense(6, activation="softmax")(dense_layer2)
+        dense_layer3 = keras.layers.Dense(
+            10, activation="relu", use_bias=True, name="dense3"
+        )(dense_layer2)
+        output_layer = keras.layers.Dense(6, activation="softmax")(dense_layer3)
 
         model = keras.Model(inputs=input_board, outputs=output_layer, name="AI")
         # keras.utils.plot_model(model, to_file="test.png", show_shapes=True)

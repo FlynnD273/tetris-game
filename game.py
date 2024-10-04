@@ -1,6 +1,7 @@
 import random
 import time
 import pygame
+from Tetris.Tile import Tile
 
 from Tetris.WindowRenderer import build_screen_and_render_from_height
 from Tetris.Game import Game
