@@ -1,3 +1,4 @@
+from .Tile import Tile
 from .Game import Game
 from .AI import AI
 
@@ -24,12 +25,20 @@ class Trainer:
 
         game = Game()
         game.linesCleared = 300
-        while game.isRunning and game.ticks < 1000:
+        while game.isRunning and game.ticks < 2000:
             action = self.ai.get_action(game.board.tiles, game.piece)
             game.actionPressed[action] = True
             game.gameTick()
 
-        return game.ticks + 100 * game.score
+        max_height = -1
+        for row in range(game.board.height):
+            for col in range(game.board.width):
+                if game.board.getTile(row, col) != Tile.Clear:
+                    max_height = row
+                    break
+            if max_height != -1:
+                break
+        return game.ticks + 100 * game.score + 100 * max_height
 
     def _callback(self, ga):
         """print generation data"""

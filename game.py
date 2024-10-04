@@ -42,7 +42,6 @@ while isRunning:
                 raise SystemExit
 
     input_handler.update(pygame.key.get_pressed())
-    game.actionPressed[5] = True
     isRunning = game.gameTick()
 
     renderer.render(game)
