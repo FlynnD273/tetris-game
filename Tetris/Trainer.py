@@ -1,8 +1,8 @@
-from h5py._hl.base import filename_encode
 from .Tile import Tile
 from .Game import Game
 from .AI import AI
 
+import os
 import pygad.kerasga
 import pygad
 
@@ -17,7 +17,6 @@ class Trainer:
 
     def _run_tetris(self, _ga, solution, _sol_idx):
         """run the tetris game"""
-
         model_weights_matrix = pygad.kerasga.model_weights_as_matrix(
             model=self.ai.model, weights_vector=solution
         )
@@ -41,24 +40,27 @@ class Trainer:
                 break
         return game.ticks + 100 * game.score + 100 * max_height
 
-    def _callback(self, ga):
+    def _callback(self, ga: pygad.pygad.GA):
         """print generation data"""
         print(f"Generation = {ga.generations_completed}/{self.generations}")
         solution = ga.best_solution()
         print(f"Best Steps = {solution[1]}")
 
         best_solution_weights = pygad.kerasga.model_weights_as_matrix(
-            model=self.ai.model, weights_vector=solution
+            model=self.ai.model, weights_vector=solution[0]
         )
         self.ai.model.set_weights(best_solution_weights)
-        self.ai.model.save(f"{self.file_name}_{ga.generations_completed}.keras")
+        self.ai.model.save(
+            os.path.join("models", f"{self.file_name}_{ga.generations_completed}.keras")
+        )
 
     def train(
-        self, file_name, num_solutions=10, num_generations=25, num_parents_mating=5
+        self, file_name, num_solutions=20, num_generations=25, num_parents_mating=5
     ):
         """run the genetic algorithm and save results to file_name"""
         self.generations = num_generations
         self.file_name = file_name
+        os.mkdir("models")
 
         # Create an instance of the pygad.kerasga.KerasGA class to build the initial population.
         keras_ga = pygad.kerasga.KerasGA(
@@ -96,4 +98,4 @@ class Trainer:
             model=self.ai.model, weights_vector=solution
         )
         self.ai.model.set_weights(best_solution_weights)
-        self.ai.model.save(f"{file_name}.keras")
+        self.ai.model.save(os.path.join("models", f"{self.file_name}.keras"))

@@ -15,7 +15,7 @@ game = Game()
 isRunning = True
 lastTime = time.time()
 ai = AI()
-ai.model.load_weights("./test.keras")
+ai.model.load_weights("./models/test.keras")
 game.linesCleared = 200
 while isRunning:
     clock.tick(60)
