@@ -43,8 +43,17 @@ class Trainer:
                 max_height = 0
             cumulative_height = game.board.height - max_height
 
+        holes = 0
+        for row in range(game.board.height):
+            blocks = 0
+            for col in range(game.board.width):
+                if game.board.getTile(row, col) != Tile.Clear:
+                    blocks += 1
 
-        return game.ticks + 100 * game.score + cumulative_height / 10 + game.pieces_placed * 100
+            if blocks > 0:
+                holes += game.board.width - blocks
+
+        return game.ticks + 100 * game.score + cumulative_height / 10 + game.pieces_placed * 10 - holes * 100
 
     def _callback(self, ga: pygad.pygad.GA):
         """print generation data"""

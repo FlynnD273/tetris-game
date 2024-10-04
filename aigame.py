@@ -15,7 +15,7 @@ game = Game()
 isRunning = True
 lastTime = time.time()
 ai = AI(sys.argv[1] if len(sys.argv) > 1 else "./models/test.keras")
-game.linesCleared = 200
+game.linesCleared = 300
 while isRunning:
     clock.tick(60)
 
