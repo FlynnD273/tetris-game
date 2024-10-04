@@ -1,10 +1,7 @@
 from .Game import Game
 from .AI import AI
 
-import keras
 import pygad.kerasga
-import pygame
-import numpy
 import pygad
 
 
@@ -14,11 +11,7 @@ class Trainer:
 
     def __init__(self) -> None:
         self.ai = AI()
-        # pygame.init()
-        # (screen, self.renderer) = build_screen_and_render_from_height(500)
-        # self.clock = pygame.time.Clock()
-        self.completed_gens = 0
-        self.gens = 0
+        self.generations = 0
 
     def _run_tetris(self, _ga, solution, _sol_idx):
         """run the tetris game"""
@@ -31,27 +24,23 @@ class Trainer:
 
         game = Game()
         game.linesCleared = 300
-        while game.isRunning:
-            # pygame.event.get()
+        while game.isRunning and game.ticks < 1000:
             action = self.ai.get_action(game.board.tiles, game.piece)
-            # print(action)
             game.actionPressed[action] = True
             game.gameTick()
-            # self.renderer.render(game)
-            # self.clock.tick(60)
 
-        return (game.ticks + 100 * game.score)
+        return game.ticks + 100 * game.score
 
     def _callback(self, ga):
         """print generation data"""
-        print(f"Generation = {ga.generations_completed}")
+        print(f"Generation = {ga.generations_completed}/{self.generations}")
         print(f"Best Steps = {ga.best_solution()[1]}")
-        pass
 
     def train(
         self, file_name, num_solutions=10, num_generations=25, num_parents_mating=5
     ):
         """run the genetic algorithm and save results to file_name"""
+        self.generations = num_generations
 
         # Create an instance of the pygad.kerasga.KerasGA class to build the initial population.
         keras_ga = pygad.kerasga.KerasGA(
