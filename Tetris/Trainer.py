@@ -12,8 +12,11 @@ import pygad
 class Trainer:
     """The Trainer for the AI"""
 
-    def __init__(self) -> None:
-        self.ai = AI()
+    def __init__(self, file: str | None = None) -> None:
+        if file:
+            self.ai = AI(file)
+        else:
+            self.ai = AI()
         self.generations = 0
 
     def _run_tetris(self, _ga, solution, _sol_idx):
@@ -27,7 +30,7 @@ class Trainer:
         game = Game()
         game.linesCleared = 300
         cumulative_height = 0
-        while game.isRunning and game.ticks < 2000:
+        while game.isRunning and game.ticks < self.game_duration:
             action = self.ai.get_action(game.board.tiles, game.piece)
             game.actionPressed[action] = True
             game.gameTick()
@@ -53,7 +56,13 @@ class Trainer:
             if blocks > 0:
                 holes += game.board.width - blocks
 
-        return game.ticks + 100 * game.score + cumulative_height / 10 + game.pieces_placed * 10 - holes * 100
+        return (
+            game.ticks
+            + 100 * game.score
+            + cumulative_height / 10
+            + game.pieces_placed * 10
+            - holes * 100
+        )
 
     def _callback(self, ga: pygad.pygad.GA):
         """print generation data"""
@@ -70,11 +79,17 @@ class Trainer:
         )
 
     def train(
-        self, file_name, num_solutions=20, num_generations=25, num_parents_mating=5
+        self,
+        file_name,
+        num_solutions=20,
+        num_generations=25,
+        num_parents_mating=5,
+        game_duration=1000,
     ):
         """run the genetic algorithm and save results to file_name"""
         self.generations = num_generations
         self.file_name = file_name
+        self.game_duration = game_duration
         if not os.path.exists("models"):
             os.mkdir("models")
 
