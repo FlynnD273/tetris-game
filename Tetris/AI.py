@@ -7,12 +7,22 @@ from .Game import Actions
 # from .Board import Board
 from .Mino import Mino
 
+# from keras.utils import CustomObjectScope
+# from keras.metrics import Precision , Recall
+
 
 class AI:
     """The AI. Geneticly trained"""
+
     def __init__(self, file="") -> None:
         if file:
-            self.model: keras.Model = keras.models.load_model(file)
+            # with CustomObjectScope(
+            #     {
+            #         "binary_precision": Precision(),
+            #         "binary_recall": Recall(),
+            #     }
+            # ):
+                self.model: keras.Model = keras.models.load_model(file)
         else:
             self.model: keras.Model = self.build_new_model()
 
@@ -50,7 +60,7 @@ class AI:
         return model
 
     def get_action(self, board: list[Tile], mino: Mino) -> int:
-        """get the AI's action to  play, returns 0..6""" 
+        """get the AI's action to  play, returns 0..6"""
         board_one = list(map(lambda x: 0 if x == Tile.Clear else 1, board))
         # the board
         board_shape = np.array(board_one).reshape((1, 20, 10))

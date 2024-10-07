@@ -58,7 +58,7 @@ class InputPlayer(Player):
 
 def make_AI() -> AI:
     """ask about the AI file that should be used"""
-    breakpoint()
+    # breakpoint()
     question = "What keras file should be used: "
     while 1:
         file_name = ""

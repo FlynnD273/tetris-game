@@ -93,7 +93,7 @@ players = generate_players()
 pygame.init()
 pygame.key.set_repeat(200, 100)
 
-(_, renderer) = build_screen_and_render_from_height(500, 2)
+(_, renderer) = build_screen_and_render_from_height(500, len(players))
 
 run_game(renderer, players)
 
