@@ -12,6 +12,16 @@
             "console": "integratedTerminal",
             "justMyCode": false,
             // "stopOnEntry": true,
+        },
+        {
+            "name": "Python Debugger: player",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/game.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "stopOnEntry": true,
+            "env": {"PYTEST_ADDOPTS": "--no-cov"}
         }
     ]
 }

@@ -6,16 +6,17 @@ from Tetris.AI import AI
 from Tetris.WindowRenderer import build_screen_and_render_from_height
 from Tetris.Game import Game
 
-pygame.init()
-(screen, renderer) = build_screen_and_render_from_height(500)
-clock = pygame.time.Clock()
 
 game = Game()
 
 isRunning = True
 lastTime = time.time()
-ai = AI(sys.argv[1] if len(sys.argv) > 1 else "./models/test.keras")
+ai = AI(sys.argv[1] if len(sys.argv) > 1 else "./models/test_25.keras")
 game.linesCleared = 300
+
+pygame.init()
+(screen, renderer) = build_screen_and_render_from_height(500)
+clock = pygame.time.Clock()
 while isRunning:
     clock.tick(60)
 
