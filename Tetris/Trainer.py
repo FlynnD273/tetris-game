@@ -59,9 +59,9 @@ class Trainer:
         return (
             game.ticks
             + 100 * game.score
-            + cumulative_height / 10
+            + cumulative_height / 5
             + game.pieces_placed * 10
-            - holes * 100
+            - holes * 200
         )
 
     def _callback(self, ga: pygad.pygad.GA):
@@ -130,3 +130,4 @@ class Trainer:
         )
         self.ai.model.set_weights(best_solution_weights)
         self.ai.model.save(os.path.join("models", f"{self.file_name}.keras"))
+

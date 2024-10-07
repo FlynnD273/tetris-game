@@ -32,4 +32,6 @@ while isRunning:
 
     renderer.render(game)
 
+print("Final score:", game.score)
 pygame.quit()
+
