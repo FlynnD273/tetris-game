@@ -1,54 +1,66 @@
-import random
 import time
 import pygame
-from Tetris.RendererBase import *
-from Tetris.Tile import Tile
-
-from Tetris.WindowRenderer import build_screen_and_render_from_height
+from Players import InputPlayer, Player
+from Tetris.WindowRenderer import WindowRenderer, build_screen_and_render_from_height
 from Tetris.Game import Game
-from Players import *
 
+import argparse
 
-def pick_game_option() -> int:
-    """ask about the game type"""
-    print(
-        """
-        Pick a game type:
-        1. Human Only
-        2. AI only
-        3. Two Humans
-        4. Two AIs
-        5. Human and AI
-        """
-    )
-    question = "What is your choice: "
-    while 1:
-        try:
-            game_type = int(input(question))
-            if 1 <= game_type <= 5:
-                return game_type
-        except Exception:
-            pass
-        finally:
-            question = "\nThat was not an option: "
+parser = argparse.ArgumentParser()
+subparsers = parser.add_subparsers(dest="command")
+
+parse_human = subparsers.add_parser("human", help="Singleplayer human player")
+
+parse_ai = subparsers.add_parser("ai", help="Singleplayer AI player")
+parse_ai.add_argument("-p", "--path", help="Path to keras file for AI", type=str)
+
+parse_ai_ai = subparsers.add_parser("ai-ai", help="AI versus AI player")
+parse_ai_ai.add_argument(
+    "-p",
+    "--path",
+    help="Path to keras file for both AIs. Overrides --left-path and --right-path",
+    type=str,
+)
+parse_ai_ai.add_argument(
+    "-lp", "--left-path", help="Path to keras file for left AI", type=str
+)
+parse_ai_ai.add_argument(
+    "-rp", "--right-path", help="Path to keras file for right AI", type=str
+)
+
+parse_human_ai = subparsers.add_parser("human-ai", help="Human versus AI player")
+parse_human_ai.add_argument("-p", "--path", help="Path to keras file for AI", type=str)
+
+args = parser.parse_args()
 
 
 def generate_players() -> list[Player]:
     """ask and generate the players wanted"""
-    game_type = pick_game_option()
     players = []
 
-    # first player
-    if game_type % 2 == 0:
-        players.append(AIPlayer())
-    else:
-        players.append(InputPlayer())
+    match args.command:
+        case "human":
+            players.append(InputPlayer())
+        case "ai":
+            from Players import AIPlayer
 
-    # second player (if wanted)
-    if game_type == 3:
-        players.append(InputPlayer())
-    elif game_type > 3:
-        players.append(AIPlayer())
+            players.append(AIPlayer(args.path))
+        case "ai-ai":
+            from Players import AIPlayer
+
+            if args.path:
+                players.append(AIPlayer(args.path))
+                players.append(AIPlayer(args.path))
+            else:
+                players.append(AIPlayer(args.left_path))
+                players.append(AIPlayer(args.right_path))
+        case "human-ai":
+            from Players import AIPlayer
+
+            players.append(InputPlayer())
+            players.append(AIPlayer(args.path))
+        case _:
+            raise ValueError(f"Option '{args.command}' not valid.")
 
     return players
 
@@ -61,13 +73,14 @@ def make_game(index: int, player: Player) -> Game:
     return game
 
 
-def run_game(renderer: RendererBase, players: list[Player]):
+def run_game(renderer: WindowRenderer, players: list[Player]):
     """run the tetris game until a player loses"""
     games = [make_game(i, x) for i, x in enumerate(players)]
     # breakpoint()
 
     clock = pygame.time.Clock()
     isRunning = True
+    last_time = time.time()
     while isRunning:
         clock.tick(60)
 
@@ -86,6 +99,9 @@ def run_game(renderer: RendererBase, players: list[Player]):
         renderer.clear_screen()
         renderer.render_all(games)
         pygame.display.flip()
+        t = time.time()
+        print(f"\r{round(1/(t-last_time))}   ", end="")
+        last_time = t
 
 
 players = generate_players()
@@ -99,3 +115,4 @@ run_game(renderer, players)
 
 
 pygame.quit()
+

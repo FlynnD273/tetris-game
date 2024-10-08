@@ -3,7 +3,7 @@ import math
 import random
 
 from .Tile import Tile
-from .Mino import IMino, Mino, Minos
+from .Mino import Mino, Minos
 from .Board import Board
 
 
@@ -192,3 +192,4 @@ class Game:
         self.nextPiece = self._pickPiece()
         if self.piece.distToGround(self.board) == -1:
             self.isRunning = False
+
