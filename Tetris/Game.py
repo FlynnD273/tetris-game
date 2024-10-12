@@ -81,17 +81,18 @@ class Game:
         return gravities[self.level]
 
     def _pickPiece(self) -> Mino:
-        """Return a random Mino, using random bag strategy."""
-        if not self.bag:
-            self.bag = Minos.copy()
+        """Return a random Mino."""
+        # if not self.bag:
+        #     self.bag = Minos.copy()
 
-        index = random.randint(0, len(self.bag) - 1)
-        mino = self.bag[index].copy()
-        mino.offset = mino.startOffset
+        # index = random.randint(0, len(self.bag) - 1)
+        # mino = self.bag[index].copy()
+        # mino.offset = mino.startOffset
 
-        del self.bag[index]
+        # del self.bag[index]
 
-        return mino
+        # return mino
+        return Minos[random.randint(0, len(Minos) - 1)].copy()
 
     def rotateCW(self) -> None:
         """Queue a clockwise rotation."""
@@ -192,3 +193,4 @@ class Game:
         self.nextPiece = self._pickPiece()
         if self.piece.distToGround(self.board) == -1:
             self.isRunning = False
+

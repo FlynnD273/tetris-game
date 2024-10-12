@@ -31,6 +31,7 @@ input_handler.add_hook(OnPressRequireResetHook(pygame.K_z, game.rotateCCW))
 input_handler.add_hook(OnPressRequireResetHook(pygame.K_x, game.rotateCW))
 
 isRunning = True
+last_time = time.time()
 lastTime = time.time()
 while isRunning:
     clock.tick(60)
@@ -46,5 +47,10 @@ while isRunning:
     isRunning = game.gameTick()
 
     renderer.render(game)
+    t = time.time()
+    print(f"\r{round(1/(t-last_time))}   ", end="")
+    last_time = t
+
 
 pygame.quit()
+

@@ -348,4 +348,5 @@ class IMino(Mino):
             self.wallkicks[(b, a)] = [(-x, -y) for x, y in [offset for offset in value]]
 
 
-Minos = [IMino(), JMino(), LMino(), OMino(), SMino(), TMino(), ZMino()]
+Minos: list[Mino] = [IMino(), JMino(), LMino(), OMino(), SMino(), TMino(), ZMino()]
+

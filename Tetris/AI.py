@@ -10,6 +10,7 @@ from .Mino import Mino
 
 class AI:
     """The AI. Geneticly trained"""
+
     def __init__(self, file="") -> None:
         if file:
             self.model: keras.Model = keras.models.load_model(file)
@@ -35,22 +36,19 @@ class AI:
         #     [conv_layer1, conv_layer2]
         # )
         dense_layer1 = keras.layers.Dense(
-            10, activation="sigmoid", use_bias=True, name="dense1"
+            64, activation="sigmoid", use_bias=True, name="dense1"
         )(flatten_layer)
         dense_layer2 = keras.layers.Dense(
-            10, activation="relu", use_bias=True, name="dense2"
+            32, activation="relu", use_bias=True, name="dense2"
         )(dense_layer1)
-        dense_layer3 = keras.layers.Dense(
-            10, activation="relu", use_bias=True, name="dense3"
-        )(dense_layer2)
-        output_layer = keras.layers.Dense(6, activation="softmax")(dense_layer3)
+        output_layer = keras.layers.Dense(6, activation="softmax")(dense_layer2)
 
         model = keras.Model(inputs=input_board, outputs=output_layer, name="AI")
         # keras.utils.plot_model(model, to_file="test.png", show_shapes=True)
         return model
 
     def get_action(self, board: list[Tile], mino: Mino) -> int:
-        """get the AI's action to  play, returns 0..6""" 
+        """get the AI's action to  play, returns 0..6"""
         board_one = list(map(lambda x: 0 if x == Tile.Clear else 1, board))
         # the board
         board_shape = np.array(board_one).reshape((1, 20, 10))
@@ -72,3 +70,4 @@ class AI:
         predict = self.model.predict(board_shape, verbose=0)
         # print(predict)
         return np.argmax(predict)
+

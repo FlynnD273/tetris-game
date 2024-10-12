@@ -1,6 +1,6 @@
 from tensorflow.python.ops.gen_math_ops import cumulative_logsumexp
 from .Tile import Tile
-from .Game import Game
+from .Game import Actions, Game
 from .AI import AI
 
 import os
@@ -28,10 +28,13 @@ class Trainer:
         self.ai.model.set_weights(weights=model_weights_matrix)
 
         game = Game()
-        game.linesCleared = 300
+        game.linesCleared = 50
         cumulative_height = 0
         while game.isRunning and game.ticks < self.game_duration:
-            action = self.ai.get_action(game.board.tiles, game.piece)
+            if game.ticks % 2 == 0:
+                action = self.ai.get_action(game.board.tiles, game.piece)
+            else:
+                action = Actions.SoftDrop.value
             game.actionPressed[action] = True
             game.gameTick()
             max_height = -1
@@ -44,7 +47,7 @@ class Trainer:
                     break
             if max_height == -1:
                 max_height = 0
-            cumulative_height = game.board.height - max_height
+            cumulative_height += game.board.height - max_height - 1
 
         holes = 0
         for row in range(game.board.height):
@@ -58,10 +61,10 @@ class Trainer:
 
         return (
             game.ticks
-            + 100 * game.score
-            + cumulative_height / 5
-            + game.pieces_placed * 10
-            - holes * 200
+            + 500 * game.score
+            - cumulative_height
+            + game.pieces_placed * 5
+            - holes * 5000
         )
 
     def _callback(self, ga: pygad.pygad.GA):
